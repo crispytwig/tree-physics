@@ -71,17 +71,18 @@ public class CommonEvents {
             if(subLevels == null || subLevels.isEmpty()) return;
             if(!(brokenState.getBlock() instanceof RotatedPillarBlock) || brokenState.getValue(RotatedPillarBlock.AXIS) != Direction.Axis.Y) return;
 
-            ServerSubLevel subLevel = subLevels.getFirst();
-            SubLevelPhysicsSystem system = SubLevelPhysicsSystem.get(level);
-            RigidBodyHandle handle = system.getPhysicsHandle(subLevel);
+            for (ServerSubLevel subLevel : subLevels) {
+                SubLevelPhysicsSystem system = SubLevelPhysicsSystem.get(level);
+                RigidBodyHandle handle = system.getPhysicsHandle(subLevel);
 
-            Vec3 breakDirection = player.getEyePosition().subtract(pos.getCenter()).normalize();
-            Vector3d forward = new Vector3d(JOMLConversion.toJOML(Direction.getNearest(breakDirection).getNormal()));
-            forward.rotateAxis(Math.toRadians(level.getRandom().nextIntBetweenInclusive(-25, 25)), 0, 1, 0);
-            Vector3d torque = forward.cross(0, 1, 0, new Vector3d()).mul(0.3);
-            Vector3d velocity = forward.negate(new Vector3d());
+                Vec3 breakDirection = player.getEyePosition().subtract(pos.getCenter()).normalize();
+                Vector3d forward = new Vector3d(JOMLConversion.toJOML(Direction.getNearest(breakDirection).getNormal()));
+                forward.rotateAxis(Math.toRadians(level.getRandom().nextIntBetweenInclusive(-25, 25)), 0, 1, 0);
+                Vector3d torque = forward.cross(0, 1, 0, new Vector3d()).mul(0.3);
+                Vector3d velocity = forward.negate(new Vector3d());
 
-            handle.addLinearAndAngularVelocity(velocity, torque);
+                handle.addLinearAndAngularVelocity(velocity, torque);
+            }
         }
     }
 
