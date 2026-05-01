@@ -30,6 +30,7 @@ import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -60,6 +61,13 @@ public class CommonEvents {
         if(!player.isShiftKeyDown() && level.getBlockState(pos).is(BlockTags.LOGS)) {
             List<ServerSubLevel> subLevels = TreeGatherer.trySplit((ServerLevel) event.getLevel(), pos);
             BlockState brokenState = level.getBlockState(pos);
+
+            BlockPos belowPos = pos.below();
+            BlockState belowState = level.getBlockState(belowPos);
+            if(belowState.is(Blocks.ROOTED_DIRT)) {
+                level.setBlock(belowPos, Blocks.DIRT.defaultBlockState(), 2);
+            }
+
             if(subLevels == null || subLevels.isEmpty()) return;
             if(!(brokenState.getBlock() instanceof RotatedPillarBlock) || brokenState.getValue(RotatedPillarBlock.AXIS) != Direction.Axis.Y) return;
 
