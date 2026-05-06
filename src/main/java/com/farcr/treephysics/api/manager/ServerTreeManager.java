@@ -13,6 +13,7 @@ import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
 import foundry.veil.api.network.VeilPacketManager;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -22,6 +23,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
@@ -69,6 +72,24 @@ public class ServerTreeManager extends SavedData implements TreeManager {
             SubLevel subLevel = tree.getSubLevel(this.level);
             if(subLevel == null) {
                 continue;
+            }
+
+            if(tree.lifeTicks % 2 == 0 && tree.leafBreakProgress > -1 && tree.leafBreakProgress < 8) {
+                int distance = LeavesBlock.DECAY_DISTANCE - tree.leafBreakProgress;
+                float breakChance = Math.min(distance < 2 ? 0 : 1, (distance * distance) / 25.0f);
+
+                for (BlockPos pos : TreeUtil.plotIterator(subLevel)) {
+                    BlockState state = level.getBlockState(pos);
+                    if(!(state.getBlock() instanceof LeavesBlock)) continue;
+                    if(state.getValue(LeavesBlock.DISTANCE) != distance) continue;
+
+                    boolean shouldBreak = level.getRandom().nextFloat() <= breakChance;
+                    if(shouldBreak) {
+                        level.destroyBlock(pos, true);
+                    }
+                }
+
+                tree.leafBreakProgress++;
             }
 
             if(this.shouldDespawn(tree)) {
@@ -125,6 +146,14 @@ public class ServerTreeManager extends SavedData implements TreeManager {
             originalTree.updateLogCount(this.level);
             this.trees.put(split.getUniqueId(), data);
             this.sendAllTrees();
+            this.setDirty();
+        }
+    }
+
+    public void startBreakingLeaves(SubLevel subLevel) {
+        TreeData data = this.trees.get(subLevel.getUniqueId());
+        if(data != null) {
+            data.leafBreakProgress = 0;
             this.setDirty();
         }
     }

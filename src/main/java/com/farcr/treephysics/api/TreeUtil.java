@@ -1,12 +1,13 @@
 package com.farcr.treephysics.api;
 
-import com.farcr.treephysics.api.flood_fill.TreeResult;
 import com.farcr.treephysics.api.flood_fill.TreeFloodFill;
+import com.farcr.treephysics.api.flood_fill.TreeResult;
 import com.farcr.treephysics.api.manager.ServerTreeManager;
 import com.farcr.treephysics.client.TreeManager;
 import com.farcr.treephysics.index.TreePhysicsTags;
 import dev.ryanhcode.sable.api.SubLevelAssemblyHelper;
 import dev.ryanhcode.sable.companion.math.BoundingBox3i;
+import dev.ryanhcode.sable.companion.math.BoundingBox3ic;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.core.BlockPos;
@@ -58,6 +59,11 @@ public class TreeUtil {
     public static double getUprightness(SubLevel subLevel) {
         Vector3d direction = subLevel.logicalPose().transformNormal(DIRECTION.set(UP));
         return Math.max(0, direction.dot(UP));
+    }
+
+    public static Iterable<BlockPos> plotIterator(SubLevel subLevel) {
+        BoundingBox3ic box = subLevel.getPlot().getBoundingBox();
+        return BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ());
     }
 
     private static final TreeFloodFill TREE_VALIDATOR = new TreeFloodFill()

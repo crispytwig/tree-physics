@@ -120,9 +120,7 @@ public class CommonEvents {
                     ServerTreeManager handler = (ServerTreeManager) treeManager;
                     handler.unsetTree(subLevel);
                 } else {
-                    BoundingBox3ic box = subLevel.getPlot().getBoundingBox();
-                    Iterable<BlockPos> iterator = BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX() + 1, box.maxY() + 1, box.maxZ() + 1);
-                    for (BlockPos blockPos : iterator) {
+                    for (BlockPos blockPos : TreeUtil.plotIterator(subLevel)) {
                         BlockState state = level.getBlockState(blockPos);
                         if(!state.isAir()) {
                             for (Direction direction : Direction.values()) {

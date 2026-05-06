@@ -1,9 +1,9 @@
 package com.farcr.treephysics.api.manager;
 
+import com.farcr.treephysics.api.TreeUtil;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
-import dev.ryanhcode.sable.companion.math.BoundingBox3ic;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
@@ -34,16 +34,14 @@ public class TreeData {
     }
 
     public TreeData(UUID subLevelId) {
-        this(subLevelId, 0, 1, 0);
+        this(subLevelId, 0, -1, 0);
     }
 
     public void updateLogCount(Level level) {
         SubLevel subLevel = getSubLevel(level);
         if(subLevel != null) {
             int logs = 0;
-            BoundingBox3ic box = subLevel.getPlot().getBoundingBox();
-            Iterable<BlockPos> iterable = BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ());
-            for (BlockPos pos : iterable) {
+            for (BlockPos pos : TreeUtil.plotIterator(subLevel)) {
                 BlockState state = level.getBlockState(pos);
                 if(state.is(BlockTags.LOGS)) {
                     logs++;
