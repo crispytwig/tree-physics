@@ -22,8 +22,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ParticleUtils;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
@@ -70,6 +72,10 @@ public class CommonEvents {
             }
 
             if(!player.isShiftKeyDown()) {
+                if(TreePhysicsConfig.REQUIRES_AXE.getAsBoolean() && !event.getPlayer().getItemInHand(InteractionHand.MAIN_HAND).is(ItemTags.AXES)) {
+                    return;
+                }
+
                 List<ServerSubLevel> subLevels = TreeUtil.trySplit((ServerLevel) level, pos);
 
                 BlockPos belowPos = pos.below();

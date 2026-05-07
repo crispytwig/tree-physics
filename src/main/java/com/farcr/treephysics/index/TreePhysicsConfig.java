@@ -8,6 +8,7 @@ public class TreePhysicsConfig {
     public static final ModConfigSpec.IntValue DESPAWN_TIME;
     public static final ModConfigSpec.EnumValue<DespawnBehavior> DESPAWN_BEHAVIOR;
     public static final ModConfigSpec.BooleanValue CAN_BUILD;
+    public static final ModConfigSpec.BooleanValue REQUIRES_AXE;
     public static final ModConfigSpec.BooleanValue CAN_WALK_THROUGH_LEAVES;
     public static final ModConfigSpec.DoubleValue LEAF_WALKING_SPEED;
     public static final ModConfigSpec.DoubleValue TREE_ENTITY_DAMAGE;
@@ -36,6 +37,10 @@ public class TreePhysicsConfig {
         CAN_BUILD = builder
                 .comment("If trees can be built on")
                 .define("can_build", false);
+
+        REQUIRES_AXE = builder
+                .comment("If an axe should be required to make tree sub-levels")
+                .define("requires_axe", false);
 
         CAN_WALK_THROUGH_LEAVES = builder
                 .comment("If entities should be able to walk through leaves")
