@@ -1,6 +1,7 @@
 package com.farcr.treephysics.mixin.walk_through_leaves;
 
 import com.farcr.treephysics.index.TreePhysicsConfig;
+import com.farcr.treephysics.mixinterface.LivingEntityExtension;
 import dev.ryanhcode.sable.api.math.LevelReusedVectors;
 import dev.ryanhcode.sable.companion.math.Pose3dc;
 import dev.ryanhcode.sable.sublevel.entity_collision.SubLevelEntityCollision;
@@ -22,9 +23,12 @@ public class SubLevelEntityCollisionMixin {
 
     @Inject(method = "getSubLevelEntityCollisionShape", at = @At("HEAD"), cancellable = true)
     private static void treephysics$getSubLevelEntityCollisionShape(Entity entity, Vector3dc boundsCenter, Pose3dc subLevelPose, BlockState state, LevelAccelerator level, BlockPos pos, LevelReusedVectors sink, CallbackInfoReturnable<VoxelShape> cir) {
-        if(TreePhysicsConfig.CAN_WALK_THROUGH_LEAVES.getAsBoolean() && state.getBlock() instanceof LeavesBlock) {
+        boolean walkThroughLeaves = TreePhysicsConfig.CAN_WALK_THROUGH_LEAVES.getAsBoolean() && state.getBlock() instanceof LeavesBlock;
+        boolean wasHit = entity instanceof LivingEntityExtension extension && extension.treephysics$wasHitByTree();
+        if(walkThroughLeaves || wasHit) {
             cir.setReturnValue(Shapes.empty());
         }
+
     }
 
 }
