@@ -60,19 +60,20 @@ public abstract class LivingEntityMixin extends Entity {
     @Override
     protected void onInsideBlock(BlockState state) {
         super.onInsideBlock(state);
-        this.treephysics$inLeaves = state.is(BlockTags.LEAVES);
+        this.treephysics$inLeaves |= state.is(BlockTags.LEAVES);
     }
 
     @Override
     public void move(MoverType type, Vec3 movement) {
         if(!this.noPhysics) {
             BlockState state = this.getInBlockState();
-            this.treephysics$inLeaves = state.is(BlockTags.LEAVES);
+            this.treephysics$inLeaves |= state.is(BlockTags.LEAVES);
             if(this.treephysics$inLeaves) {
                 double value = TreePhysicsConfig.LEAF_WALKING_SPEED.getAsDouble();
                 movement = movement.multiply(value, 1, value);
                 this.setSprinting(false);
             }
+            this.treephysics$inLeaves = false;
         }
         super.move(type, movement);
     }
